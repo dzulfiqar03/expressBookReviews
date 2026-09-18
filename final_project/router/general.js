@@ -1,43 +1,42 @@
-const express = require('express');
-let books = require("./booksdb.js");
-let isValid = require("./auth_users.js").isValid;
-let users = require("./auth_users.js").users;
-const public_users = express.Router();
+const axios = require('axios');
+const BASE_URL = "http://localhost:5000";
 
-
-public_users.post("/register", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+// Get all books – async/await
+public_users.get('/', async function (req, res) {
+  try {
+    const response = await axios.get(`${BASE_URL}/`);
+    return res.status(200).send(JSON.stringify(response.data, null, 4));
+  } catch (error) {
+    return res.status(500).json({ message: "Error fetching books", error: error.message });
+  }
 });
 
-// Get the book list available in the shop
-public_users.get('/',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+// Get book by ISBN – Promises
+public_users.get('/isbn/:isbn', function (req, res) {
+  const isbn = req.params.isbn;
+  axios.get(`${BASE_URL}/isbn/${isbn}`)
+    .then(response => res.status(200).send(response.data))
+    .catch(error => res.status(500).json({ message: "Error fetching book", error: error.message }));
 });
 
-// Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
- });
-  
-// Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+// Get books by author – async/await
+public_users.get('/author/:author', async function (req, res) {
+  try {
+    const author = req.params.author;
+    const response = await axios.get(`${BASE_URL}/author/${author}`);
+    return res.status(200).send(response.data);
+  } catch (error) {
+    return res.status(500).json({ message: "Error fetching books by author", error: error.message });
+  }
 });
 
-// Get all books based on title
-public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+// Get books by title – async/await
+public_users.get('/title/:title', async function (req, res) {
+  try {
+    const title = req.params.title;
+    const response = await axios.get(`${BASE_URL}/title/${title}`);
+    return res.status(200).send(response.data);
+  } catch (error) {
+    return res.status(500).json({ message: "Error fetching books by title", error: error.message });
+  }
 });
-
-//  Get book review
-public_users.get('/review/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
-});
-
-module.exports.general = public_users;
